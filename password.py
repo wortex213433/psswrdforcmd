@@ -152,10 +152,26 @@ def get_yes_responses():
     else:
         return ['y']
 
+def print_frame(title, content):
+    width = max(len(line) for line in content.split('\n')) + 4
+    print('\033[1;36m+' + '-' * width + '+\033[0m')
+    print('\033[1;36m| \033[1;33m' + title.center(width - 2) + '\033[1;36m |\033[0m')
+    print('\033[1;36m+' + '-' * width + '+\033[0m')
+    for line in content.split('\n'):
+        print('\033[1;36m| \033[0m' + line.ljust(width - 2) + '\033[1;36m |\033[0m')
+    print('\033[1;36m+' + '-' * width + '+\033[0m')
+
+def print_simple_frame(content):
+    width = max(len(line) for line in content.split('\n')) + 4
+    print('\033[1;32m*' + '*' * width + '*\033[0m')
+    for line in content.split('\n'):
+        print('\033[1;32m* \033[0m' + line.ljust(width - 2) + '\033[1;32m *\033[0m')
+    print('\033[1;32m*' + '*' * width + '*\033[0m')
+
 def settings_menu():
     while True:
         clear_screen()
-        print(lang.get('settings_menu'))
+        print_frame("Settings", lang.get('settings_menu'))
         choice = input(lang.get('enter_choice'))
         if choice == '1':
             new_lang = input(lang.get('lang_choice')).lower()
@@ -172,17 +188,18 @@ def settings_menu():
 
 def main():
     clear_screen()
-    print(lang.get('welcome'))
+    print_frame("Welcome", lang.get('welcome'))
 
     while True:
-        print(lang.get('menu'))
+        print_frame("Main Menu", lang.get('menu'))
         choice = input(lang.get('enter_choice'))
 
         if choice == '1':
             clear_screen()
-            print(lang.get('gen_pass'))
+            print_frame("Generate Password", lang.get('gen_pass'))
 
             while True:
+                print_simple_frame("Options:")
                 try:
                     length = int(input(lang.get('length')))
                     if not 8 <= length <= 50:
@@ -213,7 +230,7 @@ def main():
 
                 print(lang.get('generating'))
                 password = generate_password(length, use_upper, use_lower, use_digits, use_special, level)
-                print(lang.get('password').format(password))
+                print_simple_frame(lang.get('password').format(password))
 
                 another = input(lang.get('another')).lower() in yes_responses
                 if not another:
@@ -224,12 +241,12 @@ def main():
 
         elif choice == '3':
             clear_screen()
-            print(lang.get('credits'))
+            print_frame("Coded By", lang.get('credits'))
             input('Press Enter to return...')
 
         elif choice == '4':
             clear_screen()
-            print(lang.get('goodbye'))
+            print_frame("Goodbye", lang.get('goodbye'))
             sys.exit(0)
 
         else:
