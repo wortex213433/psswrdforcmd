@@ -120,21 +120,25 @@ def generate_password(length, use_upper, use_lower, use_digits, use_special, lev
     if use_special:
         pool += string.punctuation
 
+    type_count = sum([use_upper, use_lower, use_digits, use_special])
+
     if level == 'high':
         if length < 12:
             length = 12
-        if not (use_upper and use_lower and use_digits and use_special):
-            use_upper = use_lower = use_digits = use_special = True
-            pool = string.ascii_uppercase + string.ascii_lowercase + string.digits + string.punctuation
+        if type_count < 3:
+            print('\033[1;33mWarning: High security selected but weak character pool. Consider adding more types.\033[0m')
     elif level == 'medium':
-        if not (use_upper or use_lower or use_digits or use_special):
-            pool = string.ascii_letters + string.digits
+        if type_count < 2:
+            print('\033[1;33mWarning: Medium security selected but weak character pool. Adding defaults.\033[0m')
+            if not pool:
+                pool = string.ascii_letters + string.digits
     elif level == 'low':
         if not pool:
             pool = string.ascii_letters
 
     if not pool:
-        return None
+        print('\033[1;31mNo character types selected. Using defaults.\033[0m')
+        pool = string.ascii_letters + string.digits
 
     return ''.join(random.choice(pool) for _ in range(length))
 
@@ -209,12 +213,7 @@ def main():
 
                 print(lang.get('generating'))
                 password = generate_password(length, use_upper, use_lower, use_digits, use_special, level)
-                if password:
-                    print(lang.get('password').format(password))
-                else:
-                    print('\033[1;31mNo character types selected. Using defaults.\033[0m')
-                    password = generate_password(length, True, True, True, False, 'medium')
-                    print(lang.get('password').format(password))
+                print(lang.get('password').format(password))
 
                 another = input(lang.get('another')).lower() in yes_responses
                 if not another:
